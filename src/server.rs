@@ -1,12 +1,12 @@
 
 use std::{
     fs::read_dir,
-    net::{Ipv4Addr, Shutdown, TcpListener, TcpStream},
+    net::{Shutdown, TcpListener, TcpStream},
     path::Path,
     thread,
 };
 
-use crate::message::message::{EnableConnectResponse, Message, MessageKind, ResponseFileTree};
+use crate::{config::ServerConfig, message::message::{EnableConnectResponse, Message, MessageKind, ResponseFileTree}};
 
 /*
     Inner handling function when connection is established with client
@@ -109,8 +109,8 @@ fn handle_connect(mut stream: TcpStream) {
     }
 }
 
-pub fn main_loop(ip: Ipv4Addr, port: u16) {
-    let listener = match TcpListener::bind(format!("{}:{}", ip, port)) {
+pub fn main_loop(config: ServerConfig) {
+    let listener = match TcpListener::bind(config.server_adress()) {
         Ok(listener) => listener,
         Err(err) => panic!("Error starting server : {}", err),
     };

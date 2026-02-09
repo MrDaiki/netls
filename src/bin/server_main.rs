@@ -1,10 +1,16 @@
-use std::net::Ipv4Addr;
+use std::env;
 
+use netls::config::ServerConfig;
 use netls::server;
 
 fn main() {
-    let server_adress = Ipv4Addr::new(127, 0, 0, 1);
-    let port = 8000 as u16;
+    let args: Vec<String> = env::args().collect();
 
-    server::main_loop(server_adress, port);
+    if args.len() != 2 {
+        println!("Error : incorrect number of arguments");
+        return;
+    } else {
+        let config = ServerConfig::from_path(&args[1]);
+        server::main_loop(config);
+    }
 }

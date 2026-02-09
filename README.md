@@ -21,11 +21,13 @@ this will produce two binaries in `target/release` :
 
 ## Usage
 
-For the moment, the server and client are set to be launched on localhost.
+you run the correct executable using : 
+```
+<executable_name> <config_path>
+```
 
-No configuration for the server is avaible in the current version.
+Client and Server each need a configuration json file as 1st command argument (See example json files provided at project root).
 
-Client can be launched with a dedicated port as an argument (it is usefull to test multi-client capabilities).
 Client, after a successful connection to the server, will prompt available commands and await for user input :
 ```
 LIST <filepath>

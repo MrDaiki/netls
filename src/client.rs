@@ -1,9 +1,12 @@
 use std::{
     io::Write,
-    net::{Ipv4Addr, SocketAddr, TcpListener, TcpStream},
+    net::{SocketAddr, TcpListener, TcpStream},
 };
 
-use crate::message::message::{AskFileTree, EnableConnect, Message, MessageKind};
+use crate::{
+    config::ClientConfig,
+    message::message::{AskFileTree, EnableConnect, Message, MessageKind},
+};
 
 fn get_client_instruction() -> Option<MessageKind> {
     std::io::stdout().flush().expect("Failed to flush stdout");
@@ -91,17 +94,18 @@ fn handle_message(stream: &mut TcpStream, adress: SocketAddr) {
     }
 }
 
-pub fn main_loop(ip: Ipv4Addr, port: u16, client_port:u16) {
+pub fn main_loop(config: ClientConfig) {
+    let server_adress = config.get_server_adress();
+    let (client_adress, client_port) = config.get_client_adress();
     // Connection to the server
-    match TcpStream::connect(format!("{}:{}", ip, port)) {
+    match TcpStream::connect(server_adress) {
         Ok(mut server_stream) => {
-            let localhost = Ipv4Addr::new(127, 0, 0, 1); // We target localhost (this will be changed later)
-            let self_stream = TcpListener::bind(format!("{}:{}", localhost, client_port));
+            let self_stream = TcpListener::bind(format!("{}:{}", client_adress, client_port));
 
             match self_stream {
                 Ok(self_stream) => {
                     MessageKind::EnableConnect(EnableConnect {
-                        ip: localhost,
+                        ip: client_adress,
                         port: client_port,
                     })
                     .write_to_stream(&mut server_stream);
